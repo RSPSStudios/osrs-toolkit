@@ -72,6 +72,10 @@ public class NpcSaver implements SerializableDefinition<NpcDefinition> {
             out.writeShort(npc.rotate90RightAnimation);
             out.writeShort(npc.rotate90LeftAnimation);
         }
+        if(npc.category != 0) {
+            out.writeByte(18);
+            out.writeShort(npc.category);
+        }
         for (int i = 0; i < 5; ++i) {
             if (npc.actions[i] != null) {
                 out.writeByte(30 + i);
