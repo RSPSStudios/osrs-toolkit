@@ -168,6 +168,11 @@ public class ObjectSaver implements SerializableDefinition<ObjectDefinition> {
             out.writeByte(82);
             out.writeShort(obj.getMapAreaId());
         }
+
+        if (obj.isRandomizeAnimStart()) {
+            out.writeByte(89);
+        }
+
         if (obj.getConfigChangeDest() != null) {
             out.writeByte(92);
             out.writeShort(obj.getVarbitID());
