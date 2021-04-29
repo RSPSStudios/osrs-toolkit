@@ -85,6 +85,10 @@ public final class OutputStream extends java.io.OutputStream {
 		buffer.put((byte) i);
 	}
 
+	public void writeBoolean(boolean value) {
+		writeByte(value ? 1 : 0);
+	}
+
 	public void writeBigSmart(int value) {
 		if (value >= 32768) {
 			ensureRemaining(4);
