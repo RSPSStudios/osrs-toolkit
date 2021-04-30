@@ -22,62 +22,56 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.ScriptDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.ScriptDefinition
+import com.javatar.osrs.definitions.impl.cs2.Opcodes
+import com.javatar.output.OutputStream
 
-import java.util.Map;
-
-import static com.javatar.osrs.definitions.impl.cs2.Opcodes.*;
-
-
-public class ScriptSaver implements SerializableDefinition<ScriptDefinition> {
-    public byte[] save(ScriptDefinition script) {
-        int[] instructions = script.getInstructions();
-        int[] intOperands = script.getIntOperands();
-        String[] stringOperands = script.getStringOperands();
-        Map<Integer, Integer>[] switches = script.getSwitches();
-
-        OutputStream out = new OutputStream();
-        out.writeByte(0); // null string
-        for (int i = 0; i < instructions.length; ++i) {
-            int opcode = instructions[i];
-            out.writeShort(opcode);
-            if (SCONST == opcode) {
-                out.writeString(stringOperands[i]);
-            } else if (opcode < 100 && opcode != RETURN && opcode != POP_INT && opcode != POP_STRING) {
-                out.writeInt(intOperands[i]);
+class ScriptSaver : SerializableDefinition<ScriptDefinition> {
+    fun save(script: ScriptDefinition): ByteArray {
+        val instructions = script.instructions
+        val intOperands = script.intOperands
+        val stringOperands = script.stringOperands
+        val switches = script.switches
+        val out = OutputStream()
+        out.writeByte(0) // null string
+        for (i in instructions.indices) {
+            val opcode = instructions[i]
+            out.writeShort(opcode)
+            if (Opcodes.SCONST == opcode) {
+                out.writeString(stringOperands[i])
+            } else if (opcode < 100 && opcode != Opcodes.RETURN && opcode != Opcodes.POP_INT && opcode != Opcodes.POP_STRING) {
+                out.writeInt(intOperands[i])
             } else {
-                out.writeByte(intOperands[i]);
+                out.writeByte(intOperands[i])
             }
         }
-        out.writeInt(instructions.length);
-        out.writeShort(script.getLocalIntCount());
-        out.writeShort(script.getLocalStringCount());
-        out.writeShort(script.getIntStackCount());
-        out.writeShort(script.getStringStackCount());
-        int switchStart = out.getOffset();
+        out.writeInt(instructions.size)
+        out.writeShort(script.localIntCount)
+        out.writeShort(script.localStringCount)
+        out.writeShort(script.intStackCount)
+        out.writeShort(script.stringStackCount)
+        val switchStart = out.offset
         if (switches == null) {
-            out.writeByte(0);
+            out.writeByte(0)
         } else {
-            out.writeByte(switches.length);
-            for (Map<Integer, Integer> s : switches) {
-                out.writeShort(s.size());
-                for (Map.Entry<Integer, Integer> e : s.entrySet()) {
-                    out.writeInt(e.getKey());
-                    out.writeInt(e.getValue());
+            out.writeByte(switches.size)
+            for (s in switches) {
+                out.writeShort(s.size)
+                for ((key, value) in s) {
+                    out.writeInt(key!!)
+                    out.writeInt(value!!)
                 }
             }
         }
-        int switchLength = out.getOffset() - switchStart;
-        out.writeShort(switchLength);
-        return out.flip();
+        val switchLength = out.offset - switchStart
+        out.writeShort(switchLength)
+        return out.flip()
     }
 
-    @Override
-    public byte[] serialize(ScriptDefinition def) {
-        return save(def);
+    override fun serialize(def: ScriptDefinition): ByteArray {
+        return save(def)
     }
 }

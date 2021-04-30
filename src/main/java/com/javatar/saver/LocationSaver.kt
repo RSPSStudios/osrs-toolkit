@@ -22,61 +22,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.LocationsDefinition;
-import com.javatar.osrs.definitions.impl.map.Location;
-import com.javatar.output.OutputStream;
+import com.google.common.collect.LinkedListMultimap
+import com.google.common.collect.Multimap
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.LocationsDefinition
+import com.javatar.osrs.definitions.impl.map.Location
+import com.javatar.output.OutputStream
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-
-
-public class LocationSaver implements SerializableDefinition<LocationsDefinition> {
-    public byte[] save(LocationsDefinition locs) {
-        Multimap<Integer, Location> locById = LinkedListMultimap.create();
-        List<Location> sortedLocs = new ArrayList<>(locs.getLocations());
-        sortedLocs.sort(Comparator.comparingInt(Location::getId));
-        for (Location loc : sortedLocs) {
-            locById.put(loc.getId(), loc);
+class LocationSaver : SerializableDefinition<LocationsDefinition> {
+    fun save(locs: LocationsDefinition): ByteArray {
+        val locById: Multimap<Int, Location> = LinkedListMultimap.create()
+        val sortedLocs: List<Location> = ArrayList(locs.locations)
+        sortedLocs.sortedWith(Comparator.comparingInt { it.id })
+        for (loc in sortedLocs) {
+            locById.put(loc.id, loc)
         }
-        OutputStream out = new OutputStream();
-        int prevId = -1;
-        for (Integer id : locById.keySet()) {
-            int diffId = id - prevId;
-            prevId = id;
-
-            out.writeShortSmart(diffId);
-
-            Collection<Location> locations = locById.get(id);
-            int position = 0;
-            for (Location loc : locations) {
-                int packedPosition = (loc.getPosition().getZ() << 12)
-                        | (loc.getPosition().getX() << 6)
-                        | (loc.getPosition().getY());
-
-                int diffPos = packedPosition - position;
-                position = packedPosition;
-
-                out.writeShortSmart(diffPos + 1);
-
-                int packedAttributes = (loc.getType() << 2) | loc.getOrientation();
-                out.writeByte(packedAttributes);
+        val out = OutputStream()
+        var prevId = -1
+        for (id in locById.keySet()) {
+            val diffId = id - prevId
+            prevId = id
+            out.writeShortSmart(diffId)
+            val locations = locById[id]
+            var position = 0
+            for (loc in locations) {
+                val packedPosition = (loc.position.z shl 12
+                        or (loc.position.x shl 6)
+                        or loc.position.y)
+                val diffPos = packedPosition - position
+                position = packedPosition
+                out.writeShortSmart(diffPos + 1)
+                val packedAttributes = loc.type shl 2 or loc.orientation
+                out.writeByte(packedAttributes)
             }
-
-            out.writeShortSmart(0);
+            out.writeShortSmart(0)
         }
-        out.writeShortSmart(0);
-        return out.flip();
+        out.writeShortSmart(0)
+        return out.flip()
     }
 
-    @Override
-    public byte[] serialize(LocationsDefinition def) {
-        return save(def);
+    override fun serialize(def: LocationsDefinition): ByteArray {
+        return save(def)
     }
 }

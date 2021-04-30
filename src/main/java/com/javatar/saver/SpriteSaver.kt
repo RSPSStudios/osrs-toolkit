@@ -1,58 +1,55 @@
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.SpriteDefinition;
-import com.javatar.osrs.definitions.impl.SpriteGroupDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.SpriteGroupDefinition
+import com.javatar.output.OutputStream
 
-
-public class SpriteSaver implements SerializableDefinition<SpriteGroupDefinition> {
-    public byte[] save(SpriteGroupDefinition group) {
-        int[] palette = new int[1];
-        if (group.getSprites().length > 0) {
-            palette = group.getSprites()[0].palette;
+class SpriteSaver : SerializableDefinition<SpriteGroupDefinition> {
+    fun save(group: SpriteGroupDefinition): ByteArray {
+        var palette = IntArray(1)
+        if (group.sprites.isNotEmpty()) {
+            palette = group.sprites[0].palette
         }
-        int length = 7 + (9 * group.getSprites().length) + (palette.length * 3);
-        for (SpriteDefinition s : group) {
-            length += s.getPixelIdx().length;
+        var length = 7 + 9 * group.sprites.size + palette.size * 3
+        for (s in group) {
+            length += s.getPixelIdx().size
         }
-        OutputStream out = new OutputStream(length);
-        for (SpriteDefinition def : group) {
-            out.writeByte(0x0);
-            byte[] pixels = def.getPixelIdx();
-            for (int pixel : pixels) {
-                out.writeByte(pixel);
+        val out = OutputStream(length)
+        for (def in group) {
+            out.writeByte(0x0)
+            val pixels = def.getPixelIdx()
+            for (pixel in pixels) {
+                out.writeByte(pixel.toInt())
             }
         }
-        for (int value : palette) {
-            out.write24BitInt(value);
+        for (value in palette) {
+            out.write24BitInt(value)
         }
-        if (group.getSprites().length == 1) {
-            out.writeShort(group.getSprites()[0].getWidth());
-            out.writeShort(group.getSprites()[0].getHeight());
+        if (group.sprites.size == 1) {
+            out.writeShort(group.sprites[0].width)
+            out.writeShort(group.sprites[0].height)
         } else {
-            out.writeShort(group.getWidth());
-            out.writeShort(group.getHeight());
+            out.writeShort(group.width)
+            out.writeShort(group.height)
         }
-        out.writeByte(palette.length - 1);
-        for (SpriteDefinition sprite : group) {
-            out.writeShort(sprite.getOffsetX());
+        out.writeByte(palette.size - 1)
+        for (sprite in group) {
+            out.writeShort(sprite.offsetX)
         }
-        for (SpriteDefinition sprite : group) {
-            out.writeShort(sprite.getOffsetY());
+        for (sprite in group) {
+            out.writeShort(sprite.offsetY)
         }
-        for (SpriteDefinition sprite : group) {
-            out.writeShort(sprite.getWidth());
+        for (sprite in group) {
+            out.writeShort(sprite.width)
         }
-        for (SpriteDefinition sprite : group) {
-            out.writeShort(sprite.getHeight());
+        for (sprite in group) {
+            out.writeShort(sprite.height)
         }
-        out.writeShort(group.getSprites().length);
-        return out.flip();
+        out.writeShort(group.sprites.size)
+        return out.flip()
     }
 
-    @Override
-    public byte[] serialize(SpriteGroupDefinition def) {
-        return save(def);
+    override fun serialize(def: SpriteGroupDefinition): ByteArray {
+        return save(def)
     }
 }

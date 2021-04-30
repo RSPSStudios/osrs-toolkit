@@ -22,46 +22,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.MapDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.MapDefinition
+import com.javatar.output.OutputStream
 
-import static com.javatar.osrs.definitions.impl.MapDefinition.*;
-
-public class MapSaver implements SerializableDefinition<MapDefinition> {
-    public byte[] save(MapDefinition map) {
-        MapDefinition.Tile[][][] tiles = map.getTiles();
-        OutputStream out = new OutputStream();
-        for (int z = 0; z < Z; z++) {
-            for (int x = 0; x < X; x++) {
-                for (int y = 0; y < Y; y++) {
-                    Tile tile = tiles[z][x][y];
+class MapSaver : SerializableDefinition<MapDefinition> {
+    fun save(map: MapDefinition): ByteArray {
+        val tiles = map.tiles
+        val out = OutputStream()
+        for (z in 0 until MapDefinition.Z) {
+            for (x in 0 until MapDefinition.X) {
+                for (y in 0 until MapDefinition.Y) {
+                    val tile = tiles[z][x][y]
                     if (tile.attrOpcode != 0) {
-                        out.writeByte(tile.attrOpcode);
-                        out.writeByte(tile.overlayId);
+                        out.writeByte(tile.attrOpcode)
+                        out.writeByte(tile.overlayId.toInt())
                     }
-                    if (tile.settings != 0) {
-                        out.writeByte(tile.settings + 49);
+                    if (tile.settings.toInt() != 0) {
+                        out.writeByte(tile.settings + 49)
                     }
-                    if (tile.underlayId != 0) {
-                        out.writeByte(tile.underlayId + 81);
+                    if (tile.underlayId.toInt() != 0) {
+                        out.writeByte(tile.underlayId + 81)
                     }
                     if (tile.height == null) {
-                        out.writeByte(0);
+                        out.writeByte(0)
                     } else {
-                        out.writeByte(1);
-                        out.writeByte(tile.height);
+                        out.writeByte(1)
+                        out.writeByte(tile.height)
                     }
                 }
             }
         }
-        return out.flip();
+        return out.flip()
     }
 
-    @Override
-    public byte[] serialize(MapDefinition def) {
-        return save(def);
+    override fun serialize(def: MapDefinition): ByteArray {
+        return save(def)
     }
 }

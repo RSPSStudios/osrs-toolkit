@@ -1,32 +1,26 @@
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.StructDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.StructDefinition
+import com.javatar.output.OutputStream
 
-import java.util.Map;
-
-
-public class StructSaver implements SerializableDefinition<StructDefinition> {
-    @Override
-    public byte[] serialize(StructDefinition def) {
-        OutputStream out = new OutputStream();
-
+class StructSaver : SerializableDefinition<StructDefinition> {
+    override fun serialize(def: StructDefinition): ByteArray {
+        val out = OutputStream()
         if (def.params != null) {
-            out.writeByte(249);
-            out.writeByte(def.params.size());
-            for (Map.Entry<Integer, Object> entry : def.params.entrySet()) {
-                out.writeByte(entry.getValue() instanceof String ? 1 : 0);
-                out.write24BitInt(entry.getKey());
-                if (entry.getValue() instanceof String) {
-                    out.writeString((String) entry.getValue());
+            out.writeByte(249)
+            out.writeByte(def.params.size)
+            for ((key, value) in def.params) {
+                out.writeByte(if (value is String) 1 else 0)
+                out.write24BitInt(key!!)
+                if (value is String) {
+                    out.writeString(value)
                 } else {
-                    out.writeInt((Integer) entry.getValue());
+                    out.writeInt((value as Int))
                 }
             }
         }
-
-        out.writeByte(0);
-        return out.flip();
+        out.writeByte(0)
+        return out.flip()
     }
 }

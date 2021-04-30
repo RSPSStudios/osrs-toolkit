@@ -22,153 +22,148 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.NpcDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.NpcDefinition
+import com.javatar.output.OutputStream
 
-import java.util.Map;
-
-
-public class NpcSaver implements SerializableDefinition<NpcDefinition> {
-    public byte[] save(NpcDefinition npc) {
-        OutputStream out = new OutputStream();
+class NpcSaver : SerializableDefinition<NpcDefinition> {
+    fun save(npc: NpcDefinition): ByteArray {
+        val out = OutputStream()
         if (npc.models != null) {
-            out.writeByte(1);
-            out.writeByte(npc.models.length);
-            for (int modelId : npc.models) {
-                out.writeShort(modelId);
+            out.writeByte(1)
+            out.writeByte(npc.models.size)
+            for (modelId in npc.models) {
+                out.writeShort(modelId)
             }
         }
         if (npc.name != null) {
-            out.writeByte(2);
-            out.writeString(npc.name);
+            out.writeByte(2)
+            out.writeString(npc.name)
         }
         if (npc.size != 1) {
-            out.writeByte(12);
-            out.writeByte(npc.size);
+            out.writeByte(12)
+            out.writeByte(npc.size)
         }
         if (npc.standingAnimation != -1) {
-            out.writeByte(13);
-            out.writeShort(npc.standingAnimation);
+            out.writeByte(13)
+            out.writeShort(npc.standingAnimation)
         }
         if (npc.walkingAnimation != -1) {
-            out.writeByte(14);
-            out.writeShort(npc.walkingAnimation);
+            out.writeByte(14)
+            out.writeShort(npc.walkingAnimation)
         }
         if (npc.rotateLeftAnimation != -1) {
-            out.writeByte(15);
-            out.writeShort(npc.rotateLeftAnimation);
+            out.writeByte(15)
+            out.writeShort(npc.rotateLeftAnimation)
         }
         if (npc.rotateRightAnimation != -1) {
-            out.writeByte(16);
-            out.writeShort(npc.rotateRightAnimation);
+            out.writeByte(16)
+            out.writeShort(npc.rotateRightAnimation)
         }
         if (npc.rotate180Animation != -1 || npc.rotate90LeftAnimation != -1 || npc.rotate90RightAnimation != -1) {
-            out.writeByte(17);
-            out.writeShort(npc.walkingAnimation);
-            out.writeShort(npc.rotate180Animation);
-            out.writeShort(npc.rotate90RightAnimation);
-            out.writeShort(npc.rotate90LeftAnimation);
+            out.writeByte(17)
+            out.writeShort(npc.walkingAnimation)
+            out.writeShort(npc.rotate180Animation)
+            out.writeShort(npc.rotate90RightAnimation)
+            out.writeShort(npc.rotate90LeftAnimation)
         }
-        if(npc.category != 0) {
-            out.writeByte(18);
-            out.writeShort(npc.category);
+        if (npc.category != 0) {
+            out.writeByte(18)
+            out.writeShort(npc.category)
         }
-        for (int i = 0; i < 5; ++i) {
+        for (i in 0..4) {
             if (npc.actions[i] != null) {
-                out.writeByte(30 + i);
-                out.writeString(npc.actions[i]);
+                out.writeByte(30 + i)
+                out.writeString(npc.actions[i])
             }
         }
         if (npc.recolorToFind != null && npc.recolorToReplace != null) {
-            out.writeByte(40);
-            out.writeByte(npc.recolorToFind.length);
-            for (int i = 0; i < npc.recolorToFind.length; ++i) {
-                out.writeShort(npc.recolorToFind[i]);
-                out.writeShort(npc.recolorToReplace[i]);
+            out.writeByte(40)
+            out.writeByte(npc.recolorToFind.size)
+            for (i in npc.recolorToFind.indices) {
+                out.writeShort(npc.recolorToFind[i].toInt())
+                out.writeShort(npc.recolorToReplace[i].toInt())
             }
         }
         if (npc.retextureToFind != null && npc.retextureToReplace != null) {
-            out.writeByte(41);
-            out.writeByte(npc.retextureToFind.length);
-            for (int i = 0; i < npc.retextureToFind.length; ++i) {
-                out.writeShort(npc.retextureToFind[i]);
-                out.writeShort(npc.retextureToReplace[i]);
+            out.writeByte(41)
+            out.writeByte(npc.retextureToFind.size)
+            for (i in npc.retextureToFind.indices) {
+                out.writeShort(npc.retextureToFind[i].toInt())
+                out.writeShort(npc.retextureToReplace[i].toInt())
             }
         }
         if (npc.chatheadModels != null) {
-            out.writeByte(60);
-            out.writeByte(npc.chatheadModels.length);
-            for (int modelId : npc.chatheadModels) {
-                out.writeShort(modelId);
+            out.writeByte(60)
+            out.writeByte(npc.chatheadModels.size)
+            for (modelId in npc.chatheadModels) {
+                out.writeShort(modelId)
             }
         }
         if (!npc.isMinimapVisible) {
-            out.writeByte(93);
+            out.writeByte(93)
         }
         if (npc.combatLevel != -1) {
-            out.writeByte(95);
-            out.writeShort(npc.combatLevel);
+            out.writeByte(95)
+            out.writeShort(npc.combatLevel)
         }
-        out.writeByte(97);
-        out.writeShort(npc.widthScale);
-        out.writeByte(98);
-        out.writeShort(npc.heightScale);
+        out.writeByte(97)
+        out.writeShort(npc.widthScale)
+        out.writeByte(98)
+        out.writeShort(npc.heightScale)
         if (npc.hasRenderPriority) {
-            out.writeByte(99);
+            out.writeByte(99)
         }
-        out.writeByte(100);
-        out.writeByte(npc.ambient);
-        out.writeByte(101);
-        out.writeByte(npc.contrast);
+        out.writeByte(100)
+        out.writeByte(npc.ambient)
+        out.writeByte(101)
+        out.writeByte(npc.contrast)
         if (npc.headIcon != -1) {
-            out.writeByte(102);
-            out.writeShort(npc.headIcon);
+            out.writeByte(102)
+            out.writeShort(npc.headIcon)
         }
-        out.writeByte(103);
-        out.writeShort(npc.rotationSpeed);
+        out.writeByte(103)
+        out.writeShort(npc.rotationSpeed)
         if (!npc.isInteractable) {
-            out.writeByte(107);
+            out.writeByte(107)
         }
         if (!npc.rotationFlag) {
-            out.writeByte(109);
+            out.writeByte(109)
         }
         if (npc.isPet) {
-            out.writeByte(111);
+            out.writeByte(111)
         }
         if (npc.configs != null) {
-            out.writeByte(118);
-            out.writeShort(npc.varbitId);
-            out.writeShort(npc.varpIndex);
-
-            int[] c = npc.configs;
-            out.writeShort(c[c.length - 1]);
-            out.writeByte(c.length - 2);
-            for (int i = 0; i <= c.length - 2; ++i) {
-                out.writeShort(c[i]);
+            out.writeByte(118)
+            out.writeShort(npc.varbitId)
+            out.writeShort(npc.varpIndex)
+            val c = npc.configs
+            out.writeShort(c[c.size - 1])
+            out.writeByte(c.size - 2)
+            for (i in 0..c.size - 2) {
+                out.writeShort(c[i])
             }
         }
         if (npc.params != null) {
-            out.writeByte(249);
-            out.writeByte(npc.params.size());
-            for (Map.Entry<Integer, Object> entry : npc.params.entrySet()) {
-                out.writeByte(entry.getValue() instanceof String ? 1 : 0);
-                out.write24BitInt(entry.getKey());
-                if (entry.getValue() instanceof String) {
-                    out.writeString((String) entry.getValue());
+            out.writeByte(249)
+            out.writeByte(npc.params.size)
+            for ((key, value) in npc.params) {
+                out.writeByte(if (value is String) 1 else 0)
+                out.write24BitInt(key!!)
+                if (value is String) {
+                    out.writeString(value)
                 } else {
-                    out.writeInt((Integer) entry.getValue());
+                    out.writeInt((value as Int))
                 }
             }
         }
-        out.writeByte(0);
-        return out.flip();
+        out.writeByte(0)
+        return out.flip()
     }
 
-    @Override
-    public byte[] serialize(NpcDefinition def) {
-        return save(def);
+    override fun serialize(def: NpcDefinition): ByteArray {
+        return save(def)
     }
 }

@@ -27,6 +27,13 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "15"
+        useIR = true
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {

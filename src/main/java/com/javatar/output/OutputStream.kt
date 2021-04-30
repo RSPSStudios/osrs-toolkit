@@ -22,163 +22,147 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.javatar.output;
+package com.javatar.output
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
+import java.io.IOException
+import java.io.OutputStream
+import java.io.UnsupportedEncodingException
+import java.nio.ByteBuffer
 
-public final class OutputStream extends java.io.OutputStream {
-	private ByteBuffer buffer;
+class OutputStream @JvmOverloads constructor(capacity: Int = 16) : OutputStream() {
+    private var buffer: ByteBuffer
+    val array: ByteArray
+        get() {
+            assert(buffer.hasArray())
+            return buffer.array()
+        }
 
-	public OutputStream(int capacity) {
-		buffer = ByteBuffer.allocate(capacity);
-	}
+    private fun ensureRemaining(remaining: Int) {
+        while (remaining > buffer.remaining()) {
+            val newCapacity = buffer.capacity() * 2
+            val old = buffer
+            old.flip()
+            buffer = ByteBuffer.allocate(newCapacity)
+            buffer.put(old)
+        }
+    }
 
-	public OutputStream() {
-		this(16);
-	}
+    fun skip(length: Int) {
+        var pos = buffer.position()
+        pos += length
+        buffer.position(pos)
+    }
 
-	public byte[] getArray() {
-		assert buffer.hasArray();
-		return buffer.array();
-	}
+    var offset: Int
+        get() = buffer.position()
+        set(offset) {
+            buffer.position(offset)
+        }
 
-	private void ensureRemaining(int remaining) {
-		while (remaining > buffer.remaining()) {
-			int newCapacity = buffer.capacity() * 2;
+    @JvmOverloads
+    fun writeBytes(b: ByteArray, offset: Int = 0, length: Int = b.size) {
+        ensureRemaining(length)
+        buffer.put(b, offset, length)
+    }
 
-			ByteBuffer old = buffer;
-			old.flip();
+    fun writeByte(i: Int) {
+        ensureRemaining(1)
+        buffer.put(i.toByte())
+    }
 
-			buffer = ByteBuffer.allocate(newCapacity);
+    fun writeBoolean(value: Boolean) {
+        writeByte(if (value) 1 else 0)
+    }
 
-			buffer.put(old);
-		}
-	}
+    fun writeBigSmart(value: Int) {
+        if (value >= 32768) {
+            ensureRemaining(4)
+            writeInt(1 shl 31 or value)
+        } else {
+            ensureRemaining(2)
+            writeShort(value)
+        }
+    }
 
-	public void skip(int length) {
-		int pos = buffer.position();
-		pos += length;
-		buffer.position(pos);
-	}
+    fun writeShort(i: Int) {
+        ensureRemaining(2)
+        buffer.putShort(i.toShort())
+    }
 
-	public int getOffset() {
-		return buffer.position();
-	}
+    fun writeShortSmart(value: Int) {
+        if (value < 128) {
+            writeByte(value)
+        } else {
+            writeShort(0x8000 or value)
+        }
+    }
 
-	public void setOffset(int offset) {
-		buffer.position(offset);
-	}
+    fun write24BitInt(i: Int) {
+        ensureRemaining(3)
+        buffer.put((i ushr 16).toByte())
+        buffer.put((i ushr 8).toByte())
+        buffer.put((i and 0xFF).toByte())
+    }
 
-	public void writeBytes(byte[] b) {
-		writeBytes(b, 0, b.length);
-	}
+    fun writeInt(i: Int) {
+        ensureRemaining(4)
+        buffer.putInt(i)
+    }
 
-	public void writeBytes(byte[] b, int offset, int length) {
-		ensureRemaining(length);
-		buffer.put(b, offset, length);
-	}
+    fun writeVarInt(var1: Int) {
+        if (var1 and -128 != 0) {
+            if (var1 and -16384 != 0) {
+                if (var1 and -2097152 != 0) {
+                    if (var1 and -268435456 != 0) {
+                        writeByte(var1 ushr 28 or 128)
+                    }
+                    writeByte(var1 ushr 21 or 128)
+                }
+                writeByte(var1 ushr 14 or 128)
+            }
+            writeByte(var1 ushr 7 or 128)
+        }
+        writeByte(var1 and 127)
+    }
 
-	public void writeByte(int i) {
-		ensureRemaining(1);
-		buffer.put((byte) i);
-	}
+    fun writeLengthFromMark(var1: Int) {
+        array[offset - var1 - 4] = (var1 shr 24).toByte()
+        array[offset - var1 - 3] = (var1 shr 16).toByte()
+        array[offset - var1 - 2] = (var1 shr 8).toByte()
+        array[offset - var1 - 1] = var1.toByte()
+    }
 
-	public void writeBoolean(boolean value) {
-		writeByte(value ? 1 : 0);
-	}
+    fun writeString(str: String) {
+        val b: ByteArray
+        b = try {
+            str.toByteArray(charset("ISO-8859-1"))
+        } catch (ex: UnsupportedEncodingException) {
+            throw RuntimeException(ex)
+        }
+        writeBytes(b)
+        writeByte(0)
+    }
 
-	public void writeBigSmart(int value) {
-		if (value >= 32768) {
-			ensureRemaining(4);
-			this.writeInt((1 << 31) | value);
-		} else {
-			ensureRemaining(2);
-			this.writeShort(value);
-		}
-	}
+    fun writeString2(str: String) {
+        writeByte(0)
+        val b = str.toByteArray()
+        writeBytes(b)
+        writeByte(0)
+    }
 
-	public void writeShort(int i) {
-		ensureRemaining(2);
-		buffer.putShort((short) i);
-	}
+    fun flip(): ByteArray {
+        buffer.flip()
+        val b = ByteArray(buffer.limit())
+        buffer[b]
+        return b
+    }
 
-	public void writeShortSmart(int value) {
-		if (value < 128) {
-			writeByte(value);
-		} else {
-			writeShort(0x8000 | value);
-		}
-	}
+    @Throws(IOException::class)
+    override fun write(b: Int) {
+        buffer.put(b.toByte())
+    }
 
-	public void write24BitInt(int i) {
-		ensureRemaining(3);
-		buffer.put((byte) (i >>> 16));
-		buffer.put((byte) (i >>> 8));
-		buffer.put((byte) (i & 0xFF));
-	}
-
-	public void writeInt(int i) {
-		ensureRemaining(4);
-		buffer.putInt(i);
-	}
-
-	public void writeVarInt(int var1) {
-		if ((var1 & -128) != 0) {
-			if ((var1 & -16384) != 0) {
-				if ((var1 & -2097152) != 0) {
-					if ((var1 & -268435456) != 0) {
-						this.writeByte(var1 >>> 28 | 128);
-					}
-
-					this.writeByte(var1 >>> 21 | 128);
-				}
-
-				this.writeByte(var1 >>> 14 | 128);
-			}
-
-			this.writeByte(var1 >>> 7 | 128);
-		}
-
-		this.writeByte(var1 & 127);
-	}
-
-	public void writeLengthFromMark(int var1) {
-		this.getArray()[this.getOffset() - var1 - 4] = (byte) (var1 >> 24);
-		this.getArray()[this.getOffset() - var1 - 3] = (byte) (var1 >> 16);
-		this.getArray()[this.getOffset() - var1 - 2] = (byte) (var1 >> 8);
-		this.getArray()[this.getOffset() - var1 - 1] = (byte) var1;
-	}
-
-	public void writeString(String str) {
-		byte[] b;
-		try {
-			b = str.getBytes("ISO-8859-1");
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(ex);
-		}
-		writeBytes(b);
-		writeByte(0);
-	}
-
-	public void writeString2(String str) {
-		writeByte(0);
-		byte[] b = str.getBytes();
-		writeBytes(b);
-		writeByte(0);
-	}
-
-	public byte[] flip() {
-		buffer.flip();
-		byte[] b = new byte[buffer.limit()];
-		buffer.get(b);
-		return b;
-	}
-
-	@Override
-	public void write(int b) throws IOException {
-		buffer.put((byte) b);
-	}
-
+    init {
+        buffer = ByteBuffer.allocate(capacity)
+    }
 }

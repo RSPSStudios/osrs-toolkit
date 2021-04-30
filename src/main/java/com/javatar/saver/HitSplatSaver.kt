@@ -1,84 +1,81 @@
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.HitSplatDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.HitSplatDefinition
+import com.javatar.output.OutputStream
 
-
-public class HitSplatSaver implements SerializableDefinition<HitSplatDefinition> {
-    @Override
-    public byte[] serialize(HitSplatDefinition def) {
-        OutputStream out = new OutputStream();
-
-        if (def.getFontType() != -1) {
-            out.writeByte(1);
-            out.writeBigSmart(def.getFontType());
+class HitSplatSaver : SerializableDefinition<HitSplatDefinition> {
+    override fun serialize(def: HitSplatDefinition): ByteArray {
+        val out = OutputStream()
+        if (def.fontType != -1) {
+            out.writeByte(1)
+            out.writeBigSmart(def.fontType)
         }
-        if (def.getTextColor() != 0xFFFFFF) {
-            out.writeByte(2);
-            out.write24BitInt(def.getTextColor());
+        if (def.textColor != 0xFFFFFF) {
+            out.writeByte(2)
+            out.write24BitInt(def.textColor)
         }
-        if (def.getLeftSprite() != -1) {
-            out.writeByte(3);
-            out.writeBigSmart(def.getLeftSprite());
+        if (def.leftSprite != -1) {
+            out.writeByte(3)
+            out.writeBigSmart(def.leftSprite)
         }
-        if (def.getLeftSprite2() != -1) {
-            out.writeByte(4);
-            out.writeBigSmart(def.getLeftSprite2());
+        if (def.leftSprite2 != -1) {
+            out.writeByte(4)
+            out.writeBigSmart(def.leftSprite2)
         }
-        if (def.getBackgroundSprite() != -1) {
-            out.writeByte(5);
-            out.writeBigSmart(def.getBackgroundSprite());
+        if (def.backgroundSprite != -1) {
+            out.writeByte(5)
+            out.writeBigSmart(def.backgroundSprite)
         }
-        if (def.getRightSpriteId() != -1) {
-            out.writeByte(6);
-            out.writeBigSmart(def.getRightSpriteId());
+        if (def.rightSpriteId != -1) {
+            out.writeByte(6)
+            out.writeBigSmart(def.rightSpriteId)
         }
-        if (def.getScrollToOffsetX() != 0) {
-            out.writeByte(7);
-            out.writeShort(def.getScrollToOffsetX());
+        if (def.scrollToOffsetX != 0) {
+            out.writeByte(7)
+            out.writeShort(def.scrollToOffsetX)
         }
-        if (def.getStringFormat() != null) {
-            out.writeByte(8);
-            out.writeString2(def.getStringFormat());
+        if (def.stringFormat != null) {
+            out.writeByte(8)
+            out.writeString2(def.stringFormat)
         }
-        if (def.getDisplayCycles() != 70) {
-            out.writeByte(9);
-            out.writeShort(def.getDisplayCycles());
+        if (def.displayCycles != 70) {
+            out.writeByte(9)
+            out.writeShort(def.displayCycles)
         }
-        if (def.getScrollToOffsetY() != 0) {
-            out.writeByte(10);
-            out.writeShort(def.getScrollToOffsetY());
+        if (def.scrollToOffsetY != 0) {
+            out.writeByte(10)
+            out.writeShort(def.scrollToOffsetY)
         }
-        if (def.getFadeStartCycle() == 0) {
-            out.writeByte(11);
+        if (def.fadeStartCycle == 0) {
+            out.writeByte(11)
         }
-        if (def.getUseDamage() != -1) {
-            out.writeByte(12);
-            out.writeByte(def.getUseDamage());
+        if (def.useDamage != -1) {
+            out.writeByte(12)
+            out.writeByte(def.useDamage)
         }
-        if (def.getTextOffsetY() != 0) {
-            out.writeByte(13);
-            out.writeShort(def.getTextOffsetY());
+        if (def.textOffsetY != 0) {
+            out.writeByte(13)
+            out.writeShort(def.textOffsetY)
         }
-        if (def.getFadeStartCycle() > 0) {
-            out.writeByte(14);
-            out.writeShort(def.getFadeStartCycle());
+        if (def.fadeStartCycle > 0) {
+            out.writeByte(14)
+            out.writeShort(def.fadeStartCycle)
         }
-        if (def.getVarbitID() != -1) {
-            int defaultId = def.getMultihitsplats()[def.getMultihitsplats().length - 1];
-            out.writeByte(defaultId == -1 ? 17 : 18);
-            out.writeShort(def.getVarbitID());
-            out.writeShort(def.getVarpID());
+        if (def.varbitID != -1) {
+            val defaultId = def.multihitsplats[def.multihitsplats.size - 1]
+            out.writeByte(if (defaultId == -1) 17 else 18)
+            out.writeShort(def.varbitID)
+            out.writeShort(def.varpID)
             if (defaultId != -1) {
-                out.writeShort(defaultId);
+                out.writeShort(defaultId)
             }
-            out.writeByte(def.getMultihitsplats().length - 2);
-            for (int i = 0; i < def.getMultihitsplats().length - 1; i++) {
-                out.writeShort(def.getMultihitsplats()[i]);
+            out.writeByte(def.multihitsplats.size - 2)
+            for (i in 0 until def.multihitsplats.size - 1) {
+                out.writeShort(def.multihitsplats[i])
             }
         }
-        out.writeByte(0);
-        return out.flip();
+        out.writeByte(0)
+        return out.flip()
     }
 }

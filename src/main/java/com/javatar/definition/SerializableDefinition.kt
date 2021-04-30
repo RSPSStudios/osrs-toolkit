@@ -1,10 +1,7 @@
-package com.javatar.definition;
+package com.javatar.definition
 
-import com.javatar.osrs.definitions.Definition;
+import com.javatar.osrs.definitions.Definition
 
-@FunctionalInterface
-public interface SerializableDefinition<T extends Definition> {
-
-    byte[] serialize(T def);
-
+fun interface SerializableDefinition<T : Definition> {
+    fun serialize(def: T): ByteArray
 }

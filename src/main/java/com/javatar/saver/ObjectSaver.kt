@@ -22,188 +22,181 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.ObjectDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.ObjectDefinition
+import com.javatar.output.OutputStream
 
-import java.util.Map;
-
-
-public class ObjectSaver implements SerializableDefinition<ObjectDefinition> {
-    public byte[] save(ObjectDefinition obj) {
-        OutputStream out = new OutputStream();
-        if (obj.getObjectTypes() != null && obj.getObjectModels() != null) {
-            out.writeByte(1);
-            out.writeByte(obj.getObjectTypes().length);
-            for (int i = 0; i < obj.getObjectTypes().length; ++i) {
-                out.writeShort(obj.getObjectModels()[i]);
-                out.writeByte(obj.getObjectTypes()[i]);
+class ObjectSaver : SerializableDefinition<ObjectDefinition> {
+    fun save(obj: ObjectDefinition): ByteArray {
+        val out = OutputStream()
+        if (obj.objectTypes != null && obj.objectModels != null) {
+            out.writeByte(1)
+            out.writeByte(obj.objectTypes.size)
+            for (i in obj.objectTypes.indices) {
+                out.writeShort(obj.objectModels[i])
+                out.writeByte(obj.objectTypes[i])
             }
         }
-        if (obj.getName() != null) {
-            out.writeByte(2);
-            out.writeString(obj.getName());
+        if (obj.name != null) {
+            out.writeByte(2)
+            out.writeString(obj.name)
         }
-        if (obj.getObjectTypes() == null && obj.getObjectModels() != null) {
-            out.writeByte(5);
-            out.writeByte(obj.getObjectModels().length);
-            for (int i = 0; i < obj.getObjectModels().length; ++i) {
-                out.writeShort(obj.getObjectModels()[i]);
+        if (obj.objectTypes == null && obj.objectModels != null) {
+            out.writeByte(5)
+            out.writeByte(obj.objectModels.size)
+            for (i in obj.objectModels.indices) {
+                out.writeShort(obj.objectModels[i])
             }
         }
-        out.writeByte(14);
-        out.writeByte(obj.getSizeX());
-        out.writeByte(15);
-        out.writeByte(obj.getSizeY());
-        if (obj.getInteractType() == 0 && !obj.isBlocksProjectile()) {
-            out.writeByte(17);
-        } else if (!obj.isBlocksProjectile()) {
-            out.writeByte(18);
+        out.writeByte(14)
+        out.writeByte(obj.sizeX)
+        out.writeByte(15)
+        out.writeByte(obj.sizeY)
+        if (obj.interactType == 0 && !obj.isBlocksProjectile) {
+            out.writeByte(17)
+        } else if (!obj.isBlocksProjectile) {
+            out.writeByte(18)
         }
-        if (obj.getWallOrDoor() != -1) {
-            out.writeByte(19);
-            out.writeByte(obj.getWallOrDoor());
+        if (obj.wallOrDoor != -1) {
+            out.writeByte(19)
+            out.writeByte(obj.wallOrDoor)
         }
-        if (obj.getContouredGround() == 0) {
-            out.writeByte(21);
+        if (obj.contouredGround == 0) {
+            out.writeByte(21)
         }
-        if (!obj.isMergeNormals()) {
-            out.writeByte(22);
+        if (!obj.isMergeNormals) {
+            out.writeByte(22)
         }
-        if (obj.isABool2111()) {
-            out.writeByte(23);
+        if (obj.isABool2111) {
+            out.writeByte(23)
         }
-        if (obj.getAnimationID() != -1) {
-            out.writeByte(24);
-            out.writeShort(obj.getAnimationID());
+        if (obj.animationID != -1) {
+            out.writeByte(24)
+            out.writeShort(obj.animationID)
         }
-        if (obj.getInteractType() == 1) {
-            out.writeByte(27);
+        if (obj.interactType == 1) {
+            out.writeByte(27)
         }
-        out.writeByte(28);
-        out.writeByte(obj.getDecorDisplacement());
-        out.writeByte(29);
-        out.writeByte(obj.getAmbient());
-        out.writeByte(39);
-        out.writeByte(obj.getContrast() / 25);
-        for (int i = 0; i < 5; ++i) {
-            out.writeByte(30 + i);
-            String action = obj.getActions()[i];
-            out.writeString(action != null ? action : "Hidden");
+        out.writeByte(28)
+        out.writeByte(obj.decorDisplacement)
+        out.writeByte(29)
+        out.writeByte(obj.ambient)
+        out.writeByte(39)
+        out.writeByte(obj.contrast / 25)
+        for (i in 0..4) {
+            out.writeByte(30 + i)
+            val action = obj.actions[i]
+            out.writeString(action ?: "Hidden")
         }
-        if (obj.getRecolorToFind() != null && obj.getRecolorToReplace() != null) {
-            out.writeByte(40);
-            out.writeByte(obj.getRecolorToFind().length);
-            for (int i = 0; i < obj.getRecolorToFind().length; ++i) {
-                out.writeShort(obj.getRecolorToFind()[i]);
-                out.writeShort(obj.getRecolorToReplace()[i]);
+        if (obj.recolorToFind != null && obj.recolorToReplace != null) {
+            out.writeByte(40)
+            out.writeByte(obj.recolorToFind.size)
+            for (i in obj.recolorToFind.indices) {
+                out.writeShort(obj.recolorToFind[i].toInt())
+                out.writeShort(obj.recolorToReplace[i].toInt())
             }
         }
-        if (obj.getRetextureToFind() != null && obj.getTextureToReplace() != null) {
-            out.writeByte(41);
-            out.writeByte(obj.getRetextureToFind().length);
-            for (int i = 0; i < obj.getRetextureToFind().length; ++i) {
-                out.writeShort(obj.getRetextureToFind()[i]);
-                out.writeShort(obj.getTextureToReplace()[i]);
+        if (obj.retextureToFind != null && obj.textureToReplace != null) {
+            out.writeByte(41)
+            out.writeByte(obj.retextureToFind.size)
+            for (i in obj.retextureToFind.indices) {
+                out.writeShort(obj.retextureToFind[i].toInt())
+                out.writeShort(obj.textureToReplace[i].toInt())
             }
         }
-        if (obj.isRotated()) {
-            out.writeByte(62);
+        if (obj.isRotated) {
+            out.writeByte(62)
         }
-        if (!obj.isShadow()) {
-            out.writeByte(64);
+        if (!obj.isShadow) {
+            out.writeByte(64)
         }
-        out.writeByte(65);
-        out.writeShort(obj.getModelSizeX());
-        out.writeByte(66);
-        out.writeShort(obj.getModelSizeHeight());
-        out.writeByte(67);
-        out.writeShort(obj.getModelSizeY());
-        if (obj.getMapSceneID() != -1) {
-            out.writeByte(68);
-            out.writeShort(obj.getMapSceneID());
+        out.writeByte(65)
+        out.writeShort(obj.modelSizeX)
+        out.writeByte(66)
+        out.writeShort(obj.modelSizeHeight)
+        out.writeByte(67)
+        out.writeShort(obj.modelSizeY)
+        if (obj.mapSceneID != -1) {
+            out.writeByte(68)
+            out.writeShort(obj.mapSceneID)
         }
-        if (obj.getBlockingMask() != 0) {
-            out.writeByte(69);
-            out.writeByte(obj.getBlockingMask());
+        if (obj.blockingMask != 0) {
+            out.writeByte(69)
+            out.writeByte(obj.blockingMask)
         }
-        out.writeByte(70);
-        out.writeShort(obj.getOffsetX());
-        out.writeByte(71);
-        out.writeShort(obj.getOffsetHeight());
-        out.writeByte(72);
-        out.writeShort(obj.getOffsetY());
-        if (obj.isObstructsGround()) {
-            out.writeByte(73);
+        out.writeByte(70)
+        out.writeShort(obj.offsetX)
+        out.writeByte(71)
+        out.writeShort(obj.offsetHeight)
+        out.writeByte(72)
+        out.writeShort(obj.offsetY)
+        if (obj.isObstructsGround) {
+            out.writeByte(73)
         }
-        if (obj.isHollow()) {
-            out.writeByte(74);
+        if (obj.isHollow) {
+            out.writeByte(74)
         }
-        if (obj.getSupportsItems() != -1) {
-            out.writeByte(75);
-            out.writeByte(obj.getSupportsItems());
+        if (obj.supportsItems != -1) {
+            out.writeByte(75)
+            out.writeByte(obj.supportsItems)
         }
-        if (obj.getAmbientSoundId() != -1) {
-            out.writeByte(78);
-            out.writeShort(obj.getAmbientSoundId());
-            out.writeByte(obj.getAnInt2083());
+        if (obj.ambientSoundId != -1) {
+            out.writeByte(78)
+            out.writeShort(obj.ambientSoundId)
+            out.writeByte(obj.anInt2083)
         }
-        if (obj.getAnIntArray2084() != null) {
-            out.writeByte(79);
-            out.writeShort(obj.getAnInt2112());
-            out.writeShort(obj.getAnInt2113());
-            out.writeByte(obj.getAnInt2083());
-            out.writeByte(obj.getAnIntArray2084().length);
-            for (int i : obj.getAnIntArray2084()) {
-                out.writeShort(i);
+        if (obj.anIntArray2084 != null) {
+            out.writeByte(79)
+            out.writeShort(obj.anInt2112)
+            out.writeShort(obj.anInt2113)
+            out.writeByte(obj.anInt2083)
+            out.writeByte(obj.anIntArray2084.size)
+            for (i in obj.anIntArray2084) {
+                out.writeShort(i)
             }
         }
-        if (obj.getContouredGround() != -1) {
-            out.writeByte(81);
-            out.writeByte(obj.getContouredGround() / 256);
+        if (obj.contouredGround != -1) {
+            out.writeByte(81)
+            out.writeByte(obj.contouredGround / 256)
         }
-        if (obj.getMapAreaId() != -1) {
-            out.writeByte(82);
-            out.writeShort(obj.getMapAreaId());
+        if (obj.mapAreaId != -1) {
+            out.writeByte(82)
+            out.writeShort(obj.mapAreaId)
         }
-
-        if (obj.isRandomizeAnimStart()) {
-            out.writeByte(89);
+        if (obj.isRandomizeAnimStart) {
+            out.writeByte(89)
         }
-
-        if (obj.getConfigChangeDest() != null) {
-            out.writeByte(92);
-            out.writeShort(obj.getVarbitID());
-            out.writeShort(obj.getVarpID());
-
-            int[] c = obj.getConfigChangeDest();
-            out.writeShort(c[c.length - 1]);
-            out.writeByte(c.length - 2);
-            for (int i = 0; i <= c.length - 2; ++i) {
-                out.writeShort(c[i]);
+        if (obj.configChangeDest != null) {
+            out.writeByte(92)
+            out.writeShort(obj.varbitID)
+            out.writeShort(obj.varpID)
+            val c = obj.configChangeDest
+            out.writeShort(c[c.size - 1])
+            out.writeByte(c.size - 2)
+            for (i in 0..c.size - 2) {
+                out.writeShort(c[i])
             }
         }
-        if (obj.getParams() != null) {
-            out.writeByte(249);
-            out.writeByte(obj.getParams().size());
-            for (Map.Entry<Integer, Object> entry : obj.getParams().entrySet()) {
-                out.writeByte(entry.getValue() instanceof String ? 1 : 0);
-                out.write24BitInt(entry.getKey());
-                if (entry.getValue() instanceof String) {
-                    out.writeString((String) entry.getValue());
+        if (obj.params != null) {
+            out.writeByte(249)
+            out.writeByte(obj.params.size)
+            for ((key, value) in obj.params) {
+                out.writeByte(if (value is String) 1 else 0)
+                out.write24BitInt(key!!)
+                if (value is String) {
+                    out.writeString(value)
                 } else {
-                    out.writeInt((Integer) entry.getValue());
+                    out.writeInt((value as Int))
                 }
             }
         }
-        out.writeByte(0);
-        return out.flip();
+        out.writeByte(0)
+        return out.flip()
     }
 
-    @Override
-    public byte[] serialize(ObjectDefinition def) {
-        return save(def);
+    override fun serialize(def: ObjectDefinition): ByteArray {
+        return save(def)
     }
 }

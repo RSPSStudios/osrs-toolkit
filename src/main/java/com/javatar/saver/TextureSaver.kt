@@ -1,35 +1,33 @@
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.TextureDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.TextureDefinition
+import com.javatar.output.OutputStream
 
-
-public class TextureSaver implements SerializableDefinition<TextureDefinition> {
-    @Override
-    public byte[] serialize(TextureDefinition def) {
-        OutputStream out = new OutputStream();
-        out.writeShort(def.field1777);
-        out.writeByte(def.field1778 ? 1 : 0);
-        out.writeByte(def.getFileIds().length);
-        for (int id : def.getFileIds()) {
-            out.writeShort(id);
+class TextureSaver : SerializableDefinition<TextureDefinition> {
+    override fun serialize(def: TextureDefinition): ByteArray {
+        val out = OutputStream()
+        out.writeShort(def.field1777)
+        out.writeBoolean(def.field1778)
+        out.writeByte(def.fileIds.size)
+        for (id in def.fileIds) {
+            out.writeShort(id)
         }
-        if (def.getFileIds().length > 1) {
-            for (int value : def.field1780) {
-                out.writeByte(value);
+        if (def.fileIds.size > 1) {
+            for (value in def.field1780) {
+                out.writeByte(value)
             }
         }
-        if (def.getFileIds().length > 1) {
-            for (int value : def.field1781) {
-                out.writeByte(value);
+        if (def.fileIds.size > 1) {
+            for (value in def.field1781) {
+                out.writeByte(value)
             }
         }
-        for (int value : def.field1786) {
-            out.writeInt(value);
+        for (value in def.field1786) {
+            out.writeInt(value)
         }
-        out.writeByte(def.field1783);
-        out.writeByte(def.field1782);
-        return out.flip();
+        out.writeByte(def.field1783)
+        out.writeByte(def.field1782)
+        return out.flip()
     }
 }

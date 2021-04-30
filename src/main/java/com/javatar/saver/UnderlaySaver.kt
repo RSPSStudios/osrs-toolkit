@@ -1,21 +1,17 @@
-package com.javatar.saver;
+package com.javatar.saver
 
-import com.javatar.definition.SerializableDefinition;
-import com.javatar.osrs.definitions.impl.UnderlayDefinition;
-import com.javatar.output.OutputStream;
+import com.javatar.definition.SerializableDefinition
+import com.javatar.osrs.definitions.impl.UnderlayDefinition
+import com.javatar.output.OutputStream
 
-
-public class UnderlaySaver implements SerializableDefinition<UnderlayDefinition> {
-    @Override
-    public byte[] serialize(UnderlayDefinition def) {
-        OutputStream out = new OutputStream();
-
-        if (def.getColor() != 0) {
-            out.writeByte(1);
-            out.write24BitInt(def.getColor());
+class UnderlaySaver : SerializableDefinition<UnderlayDefinition> {
+    override fun serialize(def: UnderlayDefinition): ByteArray {
+        val out = OutputStream()
+        if (def.color != 0) {
+            out.writeByte(1)
+            out.write24BitInt(def.color)
         }
-
-        out.writeByte(0);
-        return out.flip();
+        out.writeByte(0)
+        return out.flip()
     }
 }
