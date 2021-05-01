@@ -35,25 +35,37 @@ class ItemSaver : SerializableDefinition<ItemDefinition> {
             out.writeByte(1)
             out.writeShort(item.inventoryModel)
         }
-        if (item.name != null) {
+        if (item.name != null && item.name != "null") {
             out.writeByte(2)
             out.writeString(item.name)
         }
-        out.writeByte(4)
-        out.writeShort(item.zoom2d)
-        out.writeByte(5)
-        out.writeShort(item.xan2d)
-        out.writeByte(6)
-        out.writeShort(item.yan2d)
-        out.writeByte(7)
-        out.writeShort(item.xOffset2d)
-        out.writeByte(8)
-        out.writeShort(item.yOffset2d)
+        if (item.zoom2d != 2000) {
+            out.writeByte(4)
+            out.writeShort(item.zoom2d)
+        }
+        if (item.xan2d != 0) {
+            out.writeByte(5)
+            out.writeShort(item.xan2d)
+        }
+        if (item.yan2d != 0) {
+            out.writeByte(6)
+            out.writeShort(item.yan2d)
+        }
+        if (item.xOffset2d != 0) {
+            out.writeByte(7)
+            out.writeShort(item.xOffset2d)
+        }
+        if (item.yOffset2d != 0) {
+            out.writeByte(8)
+            out.writeShort(item.yOffset2d)
+        }
         if (item.stackable != 0) {
             out.writeByte(11)
         }
-        out.writeByte(12)
-        out.writeInt(item.cost)
+        if (item.cost != 1) {
+            out.writeByte(12)
+            out.writeInt(item.cost)
+        }
         if (item.members) {
             out.writeByte(16)
         }
@@ -75,14 +87,17 @@ class ItemSaver : SerializableDefinition<ItemDefinition> {
             out.writeByte(26)
             out.writeShort(item.femaleModel1)
         }
+
         for (i in 0..4) {
-            if (item.options[i] != null) {
+            val option = item.options[i]
+            if (option != null && option != "null" && option != "Take") {
                 out.writeByte(30 + i)
                 out.writeString(item.options[i])
             }
         }
         for (i in 0..4) {
-            if (item.interfaceOptions[i] != null) {
+            val option = item.interfaceOptions[i]
+            if (option != null && option != "null" && option != "Drop") {
                 out.writeByte(35 + i)
                 out.writeString(item.interfaceOptions[i])
             }
@@ -103,8 +118,10 @@ class ItemSaver : SerializableDefinition<ItemDefinition> {
                 out.writeShort(item.textureReplace[i].toInt())
             }
         }
-        out.writeByte(42)
-        out.writeByte(item.shiftClickDropIndex)
+        if (item.shiftClickDropIndex != -2) {
+            out.writeByte(42)
+            out.writeByte(item.shiftClickDropIndex)
+        }
         if (item.isTradeable) {
             out.writeByte(65)
         }
@@ -132,8 +149,10 @@ class ItemSaver : SerializableDefinition<ItemDefinition> {
             out.writeByte(93)
             out.writeShort(item.femaleHeadModel2)
         }
-        out.writeByte(95)
-        out.writeShort(item.zan2d)
+        if (item.zan2d != 0) {
+            out.writeByte(95)
+            out.writeShort(item.zan2d)
+        }
         if (item.notedID != -1) {
             out.writeByte(97)
             out.writeShort(item.notedID)
@@ -149,18 +168,30 @@ class ItemSaver : SerializableDefinition<ItemDefinition> {
                 out.writeShort(item.countCo[i])
             }
         }
-        out.writeByte(110)
-        out.writeShort(item.resizeX)
-        out.writeByte(111)
-        out.writeShort(item.resizeY)
-        out.writeByte(112)
-        out.writeShort(item.resizeZ)
-        out.writeByte(113)
-        out.writeByte(item.ambient)
-        out.writeByte(114)
-        out.writeByte(item.contrast)
-        out.writeByte(115)
-        out.writeByte(item.team)
+        if (item.resizeX != 128) {
+            out.writeByte(110)
+            out.writeShort(item.resizeX)
+        }
+        if (item.resizeY != 128) {
+            out.writeByte(111)
+            out.writeShort(item.resizeY)
+        }
+        if (item.resizeZ != 128) {
+            out.writeByte(112)
+            out.writeShort(item.resizeZ)
+        }
+        if (item.ambient != 0) {
+            out.writeByte(113)
+            out.writeByte(item.ambient)
+        }
+        if (item.contrast != 0) {
+            out.writeByte(114)
+            out.writeByte(item.contrast)
+        }
+        if (item.team != 0) {
+            out.writeByte(115)
+            out.writeByte(item.team)
+        }
         if (item.boughtId != -1) {
             out.writeByte(139)
             out.writeShort(item.boughtId)

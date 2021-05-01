@@ -20,7 +20,7 @@ dependencies {
     implementation("com.google.guava:guava:30.1-jre")
     testImplementation("junit", "junit", "4.13.2")
     testImplementation("com.displee:rs-cache-library:6.8")
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib"))
 }
 
 tasks.withType<Test> {
