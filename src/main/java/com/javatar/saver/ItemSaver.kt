@@ -161,7 +161,7 @@ class ItemSaver : SerializableDefinition<ItemDefinition> {
             out.writeByte(98)
             out.writeShort(item.notedTemplate)
         }
-        if (item.countObj != null) {
+        if (item.countObj != null && item.countObj.isNotEmpty()) {
             for (i in 0..9) {
                 out.writeByte(100 + i)
                 out.writeShort(item.countObj[i])

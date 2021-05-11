@@ -26,8 +26,8 @@ class TextureSaver : SerializableDefinition<TextureDefinition> {
         for (value in def.field1786) {
             out.writeInt(value)
         }
-        out.writeByte(def.field1783)
-        out.writeByte(def.field1782)
+        out.writeByte(def.animationDirection)
+        out.writeByte(def.animationSpeed)
         return out.flip()
     }
 }

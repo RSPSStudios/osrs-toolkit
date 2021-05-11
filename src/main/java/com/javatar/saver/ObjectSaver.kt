@@ -50,10 +50,14 @@ class ObjectSaver : SerializableDefinition<ObjectDefinition> {
                 out.writeShort(obj.objectModels[i])
             }
         }
-        out.writeByte(14)
-        out.writeByte(obj.sizeX)
-        out.writeByte(15)
-        out.writeByte(obj.sizeY)
+        if (obj.sizeX != 1) {
+            out.writeByte(14)
+            out.writeByte(obj.sizeX)
+        }
+        if (obj.sizeY != 1) {
+            out.writeByte(15)
+            out.writeByte(obj.sizeY)
+        }
         if (obj.interactType == 0 && !obj.isBlocksProjectile) {
             out.writeByte(17)
         } else if (!obj.isBlocksProjectile) {
@@ -79,12 +83,18 @@ class ObjectSaver : SerializableDefinition<ObjectDefinition> {
         if (obj.interactType == 1) {
             out.writeByte(27)
         }
-        out.writeByte(28)
-        out.writeByte(obj.decorDisplacement)
-        out.writeByte(29)
-        out.writeByte(obj.ambient)
-        out.writeByte(39)
-        out.writeByte(obj.contrast / 25)
+        if (obj.decorDisplacement != 16) {
+            out.writeByte(28)
+            out.writeByte(obj.decorDisplacement)
+        }
+        if (obj.ambient != 0) {
+            out.writeByte(29)
+            out.writeByte(obj.ambient)
+        }
+        if (obj.contrast != 0) {
+            out.writeByte(39)
+            out.writeByte(obj.contrast / 25)
+        }
         for (i in 0..4) {
             out.writeByte(30 + i)
             val action = obj.actions[i]
@@ -112,12 +122,18 @@ class ObjectSaver : SerializableDefinition<ObjectDefinition> {
         if (!obj.isShadow) {
             out.writeByte(64)
         }
-        out.writeByte(65)
-        out.writeShort(obj.modelSizeX)
-        out.writeByte(66)
-        out.writeShort(obj.modelSizeHeight)
-        out.writeByte(67)
-        out.writeShort(obj.modelSizeY)
+        if (obj.modelSizeX != 128) {
+            out.writeByte(65)
+            out.writeShort(obj.modelSizeX)
+        }
+        if (obj.modelSizeHeight != 128) {
+            out.writeByte(66)
+            out.writeShort(obj.modelSizeHeight)
+        }
+        if (obj.modelSizeY != 128) {
+            out.writeByte(67)
+            out.writeShort(obj.modelSizeY)
+        }
         if (obj.mapSceneID != -1) {
             out.writeByte(68)
             out.writeShort(obj.mapSceneID)
@@ -126,12 +142,18 @@ class ObjectSaver : SerializableDefinition<ObjectDefinition> {
             out.writeByte(69)
             out.writeByte(obj.blockingMask)
         }
-        out.writeByte(70)
-        out.writeShort(obj.offsetX)
-        out.writeByte(71)
-        out.writeShort(obj.offsetHeight)
-        out.writeByte(72)
-        out.writeShort(obj.offsetY)
+        if (obj.offsetX != 0) {
+            out.writeByte(70)
+            out.writeShort(obj.offsetX)
+        }
+        if (obj.offsetHeight != 0) {
+            out.writeByte(71)
+            out.writeShort(obj.offsetHeight)
+        }
+        if (obj.offsetY != 0) {
+            out.writeByte(72)
+            out.writeShort(obj.offsetY)
+        }
         if (obj.isObstructsGround) {
             out.writeByte(73)
         }

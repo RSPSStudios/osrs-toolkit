@@ -109,23 +109,33 @@ class NpcSaver : SerializableDefinition<NpcDefinition> {
             out.writeByte(95)
             out.writeShort(npc.combatLevel)
         }
-        out.writeByte(97)
-        out.writeShort(npc.widthScale)
-        out.writeByte(98)
-        out.writeShort(npc.heightScale)
+        if (npc.widthScale != 128) {
+            out.writeByte(97)
+            out.writeShort(npc.widthScale)
+        }
+        if (npc.heightScale != 128) {
+            out.writeByte(98)
+            out.writeShort(npc.heightScale)
+        }
         if (npc.hasRenderPriority) {
             out.writeByte(99)
         }
-        out.writeByte(100)
-        out.writeByte(npc.ambient)
-        out.writeByte(101)
-        out.writeByte(npc.contrast)
+        if (npc.ambient != 0) {
+            out.writeByte(100)
+            out.writeByte(npc.ambient)
+        }
+        if (npc.contrast != 0) {
+            out.writeByte(101)
+            out.writeByte(npc.contrast)
+        }
         if (npc.headIcon != -1) {
             out.writeByte(102)
             out.writeShort(npc.headIcon)
         }
-        out.writeByte(103)
-        out.writeShort(npc.rotationSpeed)
+        if (npc.rotationSpeed != 32) {
+            out.writeByte(103)
+            out.writeShort(npc.rotationSpeed)
+        }
         if (!npc.isInteractable) {
             out.writeByte(107)
         }
