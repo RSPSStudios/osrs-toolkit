@@ -167,15 +167,15 @@ class ObjectSaver : SerializableDefinition<ObjectDefinition> {
         if (obj.ambientSoundId != -1) {
             out.writeByte(78)
             out.writeShort(obj.ambientSoundId)
-            out.writeByte(obj.anInt2083)
+            out.writeByte(obj.soundEffectRadius)
         }
-        if (obj.anIntArray2084 != null) {
+        if (obj.soundEffectIds != null) {
             out.writeByte(79)
             out.writeShort(obj.anInt2112)
             out.writeShort(obj.anInt2113)
-            out.writeByte(obj.anInt2083)
-            out.writeByte(obj.anIntArray2084.size)
-            for (i in obj.anIntArray2084) {
+            out.writeByte(obj.soundEffectRadius)
+            out.writeByte(obj.soundEffectIds.size)
+            for (i in obj.soundEffectIds) {
                 out.writeShort(i)
             }
         }
